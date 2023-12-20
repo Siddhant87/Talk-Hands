@@ -1,11 +1,9 @@
 import 'dart:io';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:talkhands/auth_provider.dart';
-import 'package:talkhands/home_screen.dart';
-import 'package:talkhands/modal/user_modal.dart';
+import 'package:talkhands/screens/home_screen.dart';
+import 'package:talkhands/modal/user_model.dart';
 import 'package:talkhands/theme/usertheme.dart';
 import 'package:talkhands/utils/utils.dart';
 
@@ -102,7 +100,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               .then((value) => ap.setSignIn().then((value) => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HomeScreen(),
+                    builder: (context) => const HomeScreen(),
                   ))));
         },
       );
@@ -124,6 +122,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.white,
         title: Text(
           'User Information',

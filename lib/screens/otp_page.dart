@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:talkhands/auth_provider.dart';
+import 'package:talkhands/screens/home_screen.dart';
 import 'package:talkhands/theme/usertheme.dart';
-import 'package:talkhands/user_info_screen.dart';
+import 'package:talkhands/screens/user_info_screen.dart';
 import 'package:talkhands/utils/utils.dart';
 
 class otp_page extends StatefulWidget {
@@ -42,20 +43,30 @@ class _otp_pageState extends State<otp_page> {
       userOtp: userOtp,
       onsuccess: () {
         ap.checkExistingUser().then((value) async {
-          //print(value);
+          print(value);
           if (value == true) {
             //user exist
+            ap.getDataFromFirestore().then(
+                  (value) => ap.saveUserDataToSP().then(
+                        (value) => ap.setSignIn().then(
+                              (value) => Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const HomeScreen()),
+                                (route) => false,
+                              ),
+                            ),
+                      ),
+                );
           } else {
             //new user
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UserInfoScreen(),
-                ));
-            // Navigator.pushAndRemoveUntil(
-            //     context,
-            //     MaterialPageRoute(builder: (context) => UserInfoScreen()),
-            //     (route) => false);
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const UserInfoScreen(),
+              ),
+              (route) => false,
+            );
           }
         });
       },
@@ -71,6 +82,7 @@ class _otp_pageState extends State<otp_page> {
         Provider.of<AuthProvider>(context, listen: true).isLoading;
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.white,
         title: const Text(
           'OTP',

@@ -1,7 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:talkhands/auth_provider.dart';
-import 'package:provider/provider.dart';
-
 class UserModel {
   String email;
   String bio;

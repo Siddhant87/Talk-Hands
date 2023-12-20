@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:talkhands/modal/user_modal.dart';
+import 'package:talkhands/modal/user_model.dart';
 import 'package:talkhands/utils/utils.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -38,11 +38,14 @@ class AuthProvider extends ChangeNotifier {
 
   AuthProvider() {
     checkSignIn();
+    print('authgetting signed in $_isSignedIn');
   }
 
   void checkSignIn() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     _isSignedIn = pref.getBool("is_signedin") ?? false;
+
+    print('getting signed in $_isSignedIn');
     notifyListeners();
   }
 
@@ -50,6 +53,7 @@ class AuthProvider extends ChangeNotifier {
     final SharedPreferences s = await SharedPreferences.getInstance();
     s.setBool("is_signedin", true);
     _isSignedIn = true;
+    print('setting signed in $_isSignedIn');
     notifyListeners();
   }
 
@@ -72,7 +76,7 @@ class AuthProvider extends ChangeNotifier {
         onsuccess();
         //print(user.uid);
       }
-
+      await Future.delayed(const Duration(seconds: 3));
       _isLoading = false;
       notifyListeners();
     } on FirebaseAuthException catch (e) {
@@ -86,9 +90,9 @@ class AuthProvider extends ChangeNotifier {
 
 //Database operations
   Future<bool> checkExistingUser() async {
-    print("CHECK EXISTING USER FUNC");
     DocumentSnapshot snapshot =
         await _firebaseFirestore.collection("users").doc(_uid).get();
+    print("CHECK EXISTING USER FUNC");
     print(await _firebaseFirestore.collection("users").doc(_uid).get());
     if (snapshot.exists) {
       print("User exist");
@@ -111,13 +115,14 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       //uploading image to firebase
-      storeFileToStorage("profilePic/$_uid", profilePic).then((value) {
-        userModel.profilePic = value;
-        userModel.createdAt = DateTime.now().millisecondsSinceEpoch.toString();
-        userModel.phoneNumber = _firebaseauth.currentUser!.phoneNumber!;
-        userModel.uid = _firebaseauth.currentUser!.phoneNumber!;
-      });
-      _userModel = userModel;
+      String downloadUrl =
+          await storeFileToStorage("profilePic/$_uid", profilePic);
+
+      userModel.profilePic = downloadUrl;
+      userModel.createdAt = DateTime.now().millisecondsSinceEpoch.toString();
+      userModel.phoneNumber = _firebaseauth.currentUser!.phoneNumber!;
+      userModel.uid = _firebaseauth.currentUser!.uid;
+      print(userModel.profilePic);
 
       //uploading to database firebase
       await _firebaseFirestore
@@ -125,6 +130,7 @@ class AuthProvider extends ChangeNotifier {
           .doc(_uid)
           .set(userModel.toMap())
           .then((value) {
+        print(userModel.toMap());
         onSuccess();
         _isLoading = false;
         notifyListeners();
@@ -139,10 +145,28 @@ class AuthProvider extends ChangeNotifier {
 
   Future<String> storeFileToStorage(String ref, File file) async {
     UploadTask uploadTask = _firebaseStorage.ref().child(ref).putFile(file);
-    print(uploadTask.snapshot.ref.getDownloadURL());
     TaskSnapshot snapshot = await uploadTask;
     String downloadUrl = await snapshot.ref.getDownloadURL();
+    print("UPLOAD SUCCESSFUL at $downloadUrl");
     return downloadUrl;
+  }
+
+  Future getDataFromFirestore() async {
+    await _firebaseFirestore
+        .collection("users")
+        .doc(_firebaseauth.currentUser!.uid)
+        .get()
+        .then((DocumentSnapshot snapshot) {
+      _userModel = UserModel(
+          name: snapshot['name'],
+          email: snapshot['email'],
+          bio: snapshot['bio'],
+          profilePic: snapshot['profilePic'],
+          createdAt: snapshot['createdAt'],
+          phoneNumber: snapshot['phoneNumber'],
+          uid: snapshot['uid']);
+      _uid = usermodel.uid;
+    });
   }
 
   //storing data locally
@@ -158,5 +182,13 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     s.clear();
     //print('SIGN OUT');
+  }
+
+  Future getDataFromSP() async {
+    SharedPreferences s = await SharedPreferences.getInstance();
+    String data = s.getString("user_model") ?? '';
+    _userModel = UserModel.fromMap(jsonDecode(data));
+    _uid = _userModel!.uid;
+    notifyListeners();
   }
 }

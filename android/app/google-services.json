@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "830167991338",
-    "project_id": "handsignrecognition-5c83c",
-    "storage_bucket": "handsignrecognition-5c83c.appspot.com"
+    "project_number": "172669089546",
+    "project_id": "talk-hands",
+    "storage_bucket": "talk-hands.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:830167991338:android:6c93ec8747582ddc23ef53",
+        "mobilesdk_app_id": "1:172669089546:android:0f10fae2f986ea4163acf3",
         "android_client_info": {
           "package_name": "com.example.talkhands"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB7Q8kXmuCp6WgUU026TnNectzFkfLkS5M"
+          "current_key": "AIzaSyAEm3c5uFF1oNCdVX9JU-D22Qw8giBmGR0"
         }
       ],
       "services": {

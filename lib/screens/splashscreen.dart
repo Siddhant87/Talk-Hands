@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:talkhands/SignupPage.dart';
-import 'package:talkhands/auth_provider.dart';
-import 'package:talkhands/home_screen.dart';
 import 'package:talkhands/theme/usertheme.dart';
+import 'package:talkhands/screens/welcom_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -24,24 +21,13 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToHomeScreen() {
-    // here listen= false means when the state in auth provider gets changes and notify listner is called then here widget state will not rebuild
-    // if listen = true then on state change widget is rebuild
-    final authprovider = Provider.of<AuthProvider>(context, listen: false);
-    print(authprovider.isSignedIn);
-    authprovider.isSignedIn == true // when true, fetch shared preferences data
-        ? Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, _, __) => const HomeScreen(),
-              // pageBuilder: (context, _, __) => HomePage(),
-            ),
-          )
-        : Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, _, __) => const SignupPage(),
-            ),
-          );
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, _, __) => const WelcomeScreen(),
+        // pageBuilder: (context, _, __) => HomePage(),
+      ),
+    );
   }
 
   @override

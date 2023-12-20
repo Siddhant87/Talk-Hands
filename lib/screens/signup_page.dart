@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:talkhands/OtpPage.dart';
+import 'package:talkhands/screens/otp_page.dart';
 import 'package:talkhands/theme/usertheme.dart';
 import 'package:talkhands/utils/utils.dart';
 
@@ -26,14 +26,15 @@ class _SignupPageState extends State<SignupPage> {
       //print(iscircle);
     });
     // Adding a delay to allow the UI to update
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     try {
       _auth.verifyPhoneNumber(
-        phoneNumber: '+91${_phone}',
+        phoneNumber: '+91$_phone',
         verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
           await _auth.signInWithCredential(phoneAuthCredential);
         },
         verificationFailed: (error) {
+          showSnackBar(context, error.message.toString());
           throw Exception(error.message);
         },
         codeSent: (String verificationId, int? resendToken) {
@@ -49,6 +50,7 @@ class _SignupPageState extends State<SignupPage> {
         },
         codeAutoRetrievalTimeout: (String verificationId) {},
       );
+      await Future.delayed(const Duration(seconds: 3));
       setState(() {
         iscircle = false;
       });
@@ -65,6 +67,7 @@ class _SignupPageState extends State<SignupPage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.white,
         title: Text(
           'Sign up',
