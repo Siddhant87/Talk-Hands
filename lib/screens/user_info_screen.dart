@@ -19,6 +19,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final bioController = TextEditingController();
+  bool _isYesChecked = false;
+  bool _isNoChecked = false;
+  String wearDevice = "";
 
   @override
   void dispose() {
@@ -87,26 +90,29 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
         profilePic: "",
         createdAt: "",
         phoneNumber: "",
+        wearDevice: wearDevice,
         uid: "");
-    if (image != null) {
+    // weardevice: ""
+    //if (image != null)
+    {
       ap.saveUserDataToFirebase(
         context: context,
         userModel: userModel,
         profilePic: image!,
         onSuccess: () {
           //once data is saved we need to store it locally also
-          ap
-              .saveUserDataToSP()
-              .then((value) => ap.setSignIn().then((value) => Navigator.push(
+          ap.saveUserDataToSP().then((value) =>
+              ap.setSignIn().then((value) => Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const HomeScreen(),
                   ))));
         },
       );
-    } else {
-      showSnackBar(context, "Please upload your profile");
     }
+    // else {
+    //   showSnackBar(context, "Please upload your profile");
+    //}
   }
 
 //for selecting image
@@ -160,7 +166,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                           backgroundColor: AppTheme.secondarycolor,
                           radius: 50,
                           child: const Icon(
-                            Icons.account_circle,
+                            Icons.camera_alt_outlined,
                             size: 50,
                             color: Colors.white,
                           ),
@@ -203,6 +209,53 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                         maxLine: 2,
                         controller: bioController,
                       ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20.0),
+                        child: Text(
+                          'Will this person wear a device?',
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Checkbox(
+                            value: _isYesChecked,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _isYesChecked = value!;
+                                _isNoChecked = !value;
+                                wearDevice = _isYesChecked ? "YES" : "NO";
+                              });
+                            },
+                          ),
+                          const Text(
+                            'Yes',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          Checkbox(
+                            value: _isNoChecked,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _isNoChecked = value!;
+                                _isYesChecked = !value;
+                                wearDevice = _isNoChecked ? "NO" : "YES";
+                              });
+                            },
+                          ),
+                          const Text(
+                            'No',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                            ),
+                          ),
+                        ],
+                      ),
 
                       Container(
                         padding: const EdgeInsets.fromLTRB(0, 40, 0, 40),
@@ -215,7 +268,19 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                                 borderRadius: BorderRadius.circular(100.0),
                               )),
                           onPressed: () {
-                            storeData();
+                            if (image == null) {
+                              showSnackBar(context, "Please select an image");
+                            } else if (nameController.text.isEmpty) {
+                              showSnackBar(context, "Please enter your name");
+                            } else if (emailController.text.isEmpty) {
+                              showSnackBar(context, "Please enter your email");
+                            } else if (bioController.text.isEmpty) {
+                              showSnackBar(context, "Please enter your bio");
+                            } else if (!_isYesChecked && !_isNoChecked) {
+                              showSnackBar(context, "Please select Yes or No");
+                            } else {
+                              storeData();
+                            }
                           },
                           child: const Text('Continue',
                               style: TextStyle(

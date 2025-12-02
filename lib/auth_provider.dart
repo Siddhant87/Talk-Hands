@@ -151,6 +151,7 @@ class AuthProvider extends ChangeNotifier {
     return downloadUrl;
   }
 
+// get data from firebase
   Future getDataFromFirestore() async {
     await _firebaseFirestore
         .collection("users")
@@ -164,6 +165,7 @@ class AuthProvider extends ChangeNotifier {
           profilePic: snapshot['profilePic'],
           createdAt: snapshot['createdAt'],
           phoneNumber: snapshot['phoneNumber'],
+          wearDevice: snapshot['wearDevice'],
           uid: snapshot['uid']);
       _uid = usermodel.uid;
     });

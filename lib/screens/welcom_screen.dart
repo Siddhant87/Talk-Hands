@@ -80,7 +80,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       padding:
-                          const EdgeInsets.fromLTRB(100.0, 20.0, 100.0, 20.0),
+                          const EdgeInsets.fromLTRB(90.0, 20.0, 90.0, 20.0),
                       backgroundColor: AppTheme.primarycolor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100.0),
